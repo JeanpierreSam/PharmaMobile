@@ -2,8 +2,11 @@ package com.example.pharmamobile
 
 import com.example.pharmamobile.data.ProductoRepositorySimulado
 import com.example.pharmamobile.demo.mostrarResultado
+import com.example.pharmamobile.domain.model.Producto
 import com.example.pharmamobile.domain.query.buscarPorId
+import com.example.pharmamobile.domain.query.disponibles
 import com.example.pharmamobile.domain.query.nombres
+import com.example.pharmamobile.domain.query.valorTotalInventario
 import com.example.pharmamobile.domain.result.ResultadoProductos
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -48,5 +51,35 @@ class DominioAsincronoTest {
         recibidos.forEach { mostrarResultado(it) }
         assertTrue(recibidos.first() is ResultadoProductos.Cargando)
         assertTrue(recibidos.last() is ResultadoProductos.Exito)
+    }
+
+    @Test
+    fun consultasSobreColecciones() = runTest {
+        val productos = repositorio.obtenerProductos()
+
+        println("Disponibles: ${productos.disponibles().size}")
+        println("Nombres: ${productos.nombres()}")
+        println("Producto 2: ${productos.buscarPorId(2L)?.nombre}")
+        println("Valor total del inventario: ${productos.valorTotalInventario()}")
+
+        assertEquals(expected = "Ibuprofeno", actual = productos.buscarPorId(2L)?.nombre)
+        assertTrue(productos.buscarPorId(99L) == null)
+    }
+
+    @Test
+    fun copyNoMutaElObjetoOriginal() {
+        val original = Producto(id = 1L, nombre = "Paracetamol", precio = 8.50, stock = 100)
+        val actualizado = original.copy(stock = 90)
+
+        println("Original: ${original.stock} | Copia: ${actualizado.stock}")
+        assertEquals(expected = 100, actual = original.stock)
+        assertEquals(expected = 90, actual = actualizado.stock)
+    }
+
+    @Test
+    fun cargarProductosPuedeTerminarEnError() = runTest {
+        val recibidos = repositorio.cargarProductosConError().toList()
+        recibidos.forEach { mostrarResultado(it) }
+        assertTrue(recibidos.last() is ResultadoProductos.Error)
     }
 }
