@@ -1,7 +1,5 @@
 package com.example.pharmamobile.domain.model
 
-import org.jetbrains.compose.resources.stringResource
-
 data class Producto(
     val id: Long,
     val nombre: String,
