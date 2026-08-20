@@ -4,7 +4,7 @@ import com.example.pharmamobile.domain.result.ResultadoProductos
 
 fun mostrarResultado(resultado: ResultadoProductos){
     when(resultado){
-        ResultadoProductos.cargando -> {
+        ResultadoProductos.Cargando -> {
             println(
                 "Cargando productos"
             )
